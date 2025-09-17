@@ -57,6 +57,30 @@ const Home = () => {
     setForm({ nama_siswa: s.nama_siswa, kelas: s.kelas, alamat: s.alamat } as any)
   }
 
+  async function handleUpdate(e: React.FormEvent) {
+    e.preventDefault()
+    if (!editingId) return
+
+    const { error } = await supabase
+      .from('students')
+      .update(
+        {
+          nama_siswa: form.nama_siswa,
+          kelas: form.kelas,
+          alamat: form.alamat
+        }
+      )
+      .eq('id', editingId)
+
+    if (error) {
+      alert('Gagal update: ' + error.message);
+      return;
+    }
+    setEditingId(null)
+    setForm({ nama_siswa: '', kelas: '', alamat: '' } as any)
+    await fetchStudents()
+  }
+
   return (
 
   )
