@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { supabase } from '../lib/supabaseClient';
 
 type Student = {
@@ -30,7 +30,33 @@ const Home = () => {
     }
     setStudents(data as Student[])
   }
-  
+
+  useEffect(() => {
+    fetchStudents()
+  }, [])
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault()
+    const { nama_siswa, kelas, alamat } = form
+    if (!nama_siswa || !kelas || !alamat) return alert('Lengkapi Form')
+
+    const { error } = await supabase.from('students')
+      .insert([
+        { nama_siswa, kelas, alamat }
+      ])
+    if (error) {
+      alert('Gagal insert:'.error.message)
+      return
+    }
+    setForm({ nama_siswa: '', kelas: '', alamat: '' } as any)
+    await fetchStudents()
+  }
+
+  function startEdit(s: Student) {
+    setEditingId(s.id)
+    setForm({ nama_siswa: s.nama_siswa, kelas: s.kelas, alamat: s.alamat } as any)
+  }
+
   return (
 
   )
