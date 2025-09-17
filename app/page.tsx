@@ -81,6 +81,21 @@ const Home = () => {
     await fetchStudents()
   }
 
+  async function handleDelete(id: string) {
+    if (!confirm('Hapus siswa ini?')) return
+
+    const { error } = await supabase
+      .from('students')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      alert('Gagal delete: ' + error.message);
+      return;
+    }
+    await fetchStudents()
+  }
+
   return (
 
   )
