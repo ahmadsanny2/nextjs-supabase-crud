@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import { supabase } from '../lib/supabaseClient';
 
@@ -40,7 +42,8 @@ const Home = () => {
     const { nama_siswa, kelas, alamat } = form
     if (!nama_siswa || !kelas || !alamat) return alert('Lengkapi Form')
 
-    const { error } = await supabase.from('students')
+    const { error } = await supabase
+      .from('students')
       .insert([
         { nama_siswa, kelas, alamat }
       ])
@@ -97,7 +100,63 @@ const Home = () => {
   }
 
   return (
+    <main style={{ maxWidth: 720, margin: '40px auto', padding: 16 }}>
+      <h1>CRUD Sederhana: Siswa</h1>
 
+      <form onSubmit={editingId ? handleUpdate : handleCreate} style={{ display: 'grid', gap: 8, marginBottom: 24 }}>
+        <input
+          placeholder="Nama Siswa"
+          value={form.nama_siswa}
+          onChange={(e) => setForm({ ...form, nama_siswa: e.target.value })}
+        />
+        <input
+          placeholder="Kelas (mis. X RPL 1)"
+          value={form.kelas}
+          onChange={(e) => setForm({ ...form, kelas: e.target.value })}
+        />
+        <input
+          placeholder="Alamat"
+          value={form.alamat}
+          onChange={(e) => setForm({ ...form, alamat: e.target.value })}
+        />
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="submit">{editingId ? 'Update' : 'Tambah'}</button>
+          {editingId && (
+            <button type="button" onClick={() => { setEditingId(null); setForm({ nama_siswa: '', kelas: '', alamat: '' } as any); }}>
+              Batal
+            </button>
+          )}
+        </div>
+      </form>
+
+      <table border={1} cellPadding={8} cellSpacing={0} width="100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nama Siswa</th>
+            <th>Kelas</th>
+            <th>Alamat</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((s, index) => (
+            <tr key={s.id}>
+              {/* index + 1 = nomor urut */}
+              <td style={{ textAlign: 'center' }}>{index + 1}</td>
+              <td>{s.nama_siswa}</td>
+              <td>{s.kelas}</td>
+              <td>{s.alamat}</td>
+              <td style={{ whiteSpace: 'nowrap' }}>
+                <button onClick={() => startEdit(s)}>Edit</button>{' '}
+                <button onClick={() => handleDelete(s.id)}>Hapus</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </main>
   )
 }
 
